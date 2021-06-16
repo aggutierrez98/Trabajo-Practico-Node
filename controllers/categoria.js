@@ -70,7 +70,7 @@ const categoriaDelete = async(req, res = response) => {
 
     try {
         // Fisicamente lo borramos
-        const categoria = await Categoria.findByIdAndDelete(id);
+        await Categoria.findByIdAndDelete(id);
 
         res.json({
             mensaje: "Se borro correctamente"

@@ -22,6 +22,7 @@ router.get('/', librosGet);
 
 router.get('/:id', [
     check('id', 'No es un ID mongo válido').isMongoId(),
+    validarCampos,
     check("id").custom(existeLibroPorId),
     validarCampos
 ], libroGetPorId);

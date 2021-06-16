@@ -21,7 +21,8 @@ const LibroSchema = Schema({
 });
 
 LibroSchema.methods.toJSON = function() {
-    const { __v, ...libro } = this.toObject();
+    const { __v, persona_id, ...libro } = this.toObject();
+    libro.persona_id = persona_id;
     return libro;
 }
 

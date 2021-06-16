@@ -18,7 +18,6 @@ router.get('/', personasGet);
 
 router.get('/:id', [
     check('id', 'No es un ID mongo válido').isMongoId(),
-    validarCampos,
     check("id").custom(existePersonaPorId),
     validarCampos
 ], personaGetPorId);
@@ -44,7 +43,6 @@ router.put('/:id', [
 
 router.delete('/:id', [
     check('id', 'No es un ID mongo válido').isMongoId(),
-    validarCampos,
     check("id").custom(existePersonaPorId),
     check("id").custom(existeLibroAsociado),
     validarCampos

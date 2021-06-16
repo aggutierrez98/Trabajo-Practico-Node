@@ -17,7 +17,6 @@ const router = Router();
 router.get('/', categoriasGet);
 router.get('/:id', [
     check('id', 'No es un ID mongo válido').isMongoId(),
-    validarCampos,
     check("id").custom(existeCategoriaPorId),
     validarCampos
 ], categoriaGetPorId);
@@ -30,7 +29,6 @@ router.post('/', [
 
 router.delete('/:id', [
     check('id', 'No es un ID mongo válido').isMongoId(),
-    validarCampos,
     check("id").custom(existeCategoriaPorId),
     check("id").custom(existeLibroAsociado),
     validarCampos

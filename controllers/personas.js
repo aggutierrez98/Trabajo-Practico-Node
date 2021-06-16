@@ -95,7 +95,7 @@ const personaDelete = async(req, res = response) => {
 
     try {
         // Fisicamente lo borramos
-        const persona = await Persona.findByIdAndDelete(id);
+        await Persona.findByIdAndDelete(id);
 
         res.json({
             mensaje: "Se borro correctamente"
