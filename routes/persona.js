@@ -14,6 +14,10 @@ const {
 
 const router = Router();
 
+
+//TODO responder a todo con faltan datos
+//TODO cambiar a validaciones propias no de express-validator
+
 router.get('/', personasGet);
 
 router.get('/:id', [

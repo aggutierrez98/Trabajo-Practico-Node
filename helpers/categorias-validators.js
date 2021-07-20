@@ -1,28 +1,32 @@
 const Categoria = require('../models/categoria');
 const Libro = require('../models/libro');
 
-const elNombreExiste = async(nombre) => {
+const elNombreExiste = async (nombre) => {
 
     nombre = nombre.toUpperCase();
     const existeNombre = await Categoria.findOne({ nombre });
     if (existeNombre) {
-        throw new Error(`El nombre: ${ nombre }, ya está registrado`);
+        throw new Error(`ese nombre de categoria ya existe`);
     }
 }
 
-const existeCategoriaPorId = async(id) => {
+const existeCategoriaPorId = async (id, res) => {
 
     const existeCategoria = await Categoria.findById(id);
     if (!existeCategoria) {
-        throw new Error(`No existe categoria con id ${id}`);
+        return res.status(413).json({
+            mensaje: "no existe la categoria indicada"
+        });
+    } else {
+        return existeCategoria;
     }
 }
 
-const existeLibroAsociado = async(id) => {
+const existeLibroAsociado = async (id) => {
 
     const existeAsociado = await Libro.findOne({ categoria_id: id });
     if (existeAsociado) {
-        throw new Error(`Categoria no se puede borrar esta asociada al libro: ${existeAsociado.nombre}`);
+        throw new Error(`categoria con libros asociados, no se puede eliminar`);
     }
 }
 
