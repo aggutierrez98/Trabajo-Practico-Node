@@ -41,8 +41,8 @@ class Server {
     }
 
     routes() {
-        // this.app.use(this.path.categoria, require('../routes/categoria'));
-        // this.app.use(this.path.persona, require('../routes/persona'));
+        this.app.use(this.path.categoria, require('../routes/categoria'));
+        this.app.use(this.path.persona, require('../routes/persona'));
         this.app.use(this.path.libro, require('../routes/libro'));
     }
 
