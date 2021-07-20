@@ -14,6 +14,9 @@ const {
 
 const router = Router();
 
+//TODO responder a todo con faltan datos
+//TODO cambiar a validaciones propias no de express-validator
+
 router.get('/', categoriasGet);
 router.get('/:id', [
     check('id', 'No es un ID mongo válido').isMongoId(),

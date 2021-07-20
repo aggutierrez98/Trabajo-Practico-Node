@@ -6,7 +6,8 @@ const LibroSchema = Schema({
         required: [true, 'El nombre es obligatorio']
     },
     descripcion: {
-        type: String
+        type: String,
+        unique: false,
     },
     categoria_id: {
         type: Schema.Types.ObjectId,
@@ -20,7 +21,7 @@ const LibroSchema = Schema({
     }
 });
 
-LibroSchema.methods.toJSON = function() {
+LibroSchema.methods.toJSON = function () {
     const { __v, persona_id, ...libro } = this.toObject();
     libro.persona_id = persona_id;
     return libro;

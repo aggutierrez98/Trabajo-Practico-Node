@@ -1,21 +1,26 @@
 const { response, request } = require('express');
+const { existeCategoriaPorId } = require('../helpers/categorias-validators');
+const { libroYaExiste, libroYaPrestado, existeLibroPorId, libroNoPrestado } = require('../helpers/libros-validators');
+const { existePersonaPorId } = require('../helpers/personas-validators');
+const { validarCampos } = require('../middlewares/validar-campos');
 const Libro = require('../models/libro');
 
 
-const librosGet = async(req = request, res = response) => {
+const librosGet = async (req = request, res = response) => {
 
     try {
-        const libros = await Libro.find().populate("persona_id", ["nombre", "email"]).populate("categoria_id", "nombre");
+        const libros = await Libro.find();
 
-        if (libros.length === 0) {
-            res.status(413).json({
-                libros
-            });
-        }
+        // if (libros.length === 0) {
+        //     res.status(413).json({
+        //         libros
+        //     });
+        // }
 
         res.status(200).json({
             libros
         });
+
     } catch (error) {
         console.log(error);
         res.status(500).json({
@@ -25,16 +30,27 @@ const librosGet = async(req = request, res = response) => {
 
 }
 
-const libroGetPorId = async(req = request, res = response) => {
+const libroGetPorId = async (req = request, res = response) => {
 
     const { id } = req.params;
 
-    try {
-        const libro = await Libro.findById(id).populate("persona_id", ["nombre", "email"]).populate("categoria_id", "nombre");
+    // if (!id) {
+    //     return res.status(413).json({
+    //         mensaje: "el id del libro es obligatorio"
+    //     });
+    // }
 
-        res.json({
-            libro
-        });
+    try {
+
+        const libroOk = existeLibroPorId(id);
+
+        if (libroOk) {
+            const libro = await Libro.findById(id);
+
+            res.json({
+                libro
+            });
+        }
 
     } catch (error) {
         console.log(error);
@@ -44,7 +60,7 @@ const libroGetPorId = async(req = request, res = response) => {
     }
 }
 
-const libroPost = async(req, res = response) => {
+const libroPost = async (req, res = response) => {
 
     let { nombre, descripcion, categoria_id, persona_id } = req.body;
     nombre = nombre.toUpperCase();
@@ -65,12 +81,14 @@ const libroPost = async(req, res = response) => {
             message: "Error inesperado"
         })
     }
+
 }
 
-const libroPut = async(req, res = response) => {
+const libroPut = async (req, res = response) => {
 
     const { id } = req.params;
     const { descripcion } = req.body;
+
     try {
 
         let libro = await Libro.findByIdAndUpdate(id, { descripcion });
@@ -85,33 +103,43 @@ const libroPut = async(req, res = response) => {
             message: "Error inesperado"
         })
     }
+
 }
 
 
-const libroPrestarPut = async(req, res = response) => {
+const libroPrestarPut = async (req, res = response) => {
 
     const { id } = req.params;
     const persona_id = req.body.persona_id;
 
-    try {
-        await Libro.findByIdAndUpdate(id, { persona_id });
+    const libroOk = existeLibroPorId(id);
+    const libroPrestadoOk = libroYaPrestado(id);
+    const personaOk = existePersonaPorId(persona_id);
 
-        res.json({
-            mensaje: "Se presto correctamente"
-        });
+    if (libroOk && libroPrestadoOk && personaOk) {
+        try {
+            await Libro.findByIdAndUpdate(id, { persona_id });
 
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({
-            message: "Error inesperado"
-        })
+            res.json({
+                mensaje: "Se presto correctamente"
+            });
+
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({
+                message: "Error inesperado"
+            })
+        }
     }
 }
 
 
-const libroDevolverPut = async(req, res = response) => {
+const libroDevolverPut = async (req, res = response) => {
 
     const { id } = req.params;
+
+    const libroOk = existeLibroPorId(id);
+    const libroPrestadoOk = libroNoPrestado(id);
 
     try {
 
@@ -129,9 +157,12 @@ const libroDevolverPut = async(req, res = response) => {
     }
 }
 
-const libroDelete = async(req, res = response) => {
+const libroDelete = async (req, res = response) => {
 
     const { id } = req.params;
+
+    const libroOk = existeLibroPorId(id);
+    const libroPrestadoOk = libroYaPrestadoParaBorrar(id);
 
     try {
         // Fisicamente lo borramos
