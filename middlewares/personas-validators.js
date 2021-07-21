@@ -4,191 +4,121 @@ const Categoria = require('../models/categoria');
 
 const ObjectId = require('mongoose').Types.ObjectId;
 
-const validarCamposGetPorId = async (req, res, next) => {
+const validarPersonaGetId = async (req, res, next) => {
 
     const { id } = req.params;
 
     //Que sea id de mongo
     if (!ObjectId.isValid(id)) {
         return res.status(413).json({
-            mensaje: "no se encuentra ese libro"
+            mensaje: "no se encuentra esa persona"
         })
     }
 
-    const existeLibro = await Libro.findById(id)
+    const existePersona = await Persona.findById(id)
 
-    if (!existeLibro) {
+    if (!existePersona) {
         console.log("no existe")
         return res.status(413).json({
-            mensaje: "no se encuentra ese libro"
+            mensaje: "no se encuentra esa persona"
         })
     }
 
     next();
 }
 
-const validarCamposPost = async (req, res, next) => {
+const validarPersonaPost = async (req, res, next) => {
 
-    let { nombre, descripcion, categoria_id, persona_id } = req.body;
+    let { nombre, apellido, alias, email } = req.body;
+    
+    // Validar datos
+    if (!nombre || !apellido || !alias || !email) {
+        return res.status(413).json({
+            mensaje: "faltan datos"
+        })
+    }
+
+    // Validar mail como error inesperado
+    let resto = email.split('@')
+    if(resto.length < 2){
+        
+        return res.status(413).json({
+            mensaje: "error inesperado"
+        });
+        
+    } else {                
+        console.log(resto)
+        let dotCom = resto[1].substr(-4)
+        console.log(dotCom)
+        if (dotCom !== '.com') {
+            return res.status(413).json({
+                mensaje: "error inesperado"
+            });
+        }
+    }
+    
+    // Para asegurar los aciertos de las busquedas, se sugiere el guardado en mayusculas de todos los campos alfanumericos
     nombre = nombre.toUpperCase();
+    apellido = apellido.toUpperCase();
+    alias = alias.toUpperCase();
+    email = email.toUpperCase();
 
-    if (!ObjectId.isValid(categoria_id)) {
+    // Persona ya registrada
+    const existePersona = await Persona.findOne({ email });
+
+    if (existePersona) {
         return res.status(413).json({
-            mensaje: "no existe categoria con ese id"
-        })
-    }
-
-    if (!ObjectId.isValid(persona_id)) {
-        return res.status(413).json({
-            mensaje: "no existe libro con ese id"
-        })
-    }
-
-    if (!nombre || !categoria_id) {
-        return res.status(413).json({
-            mensaje: "nombre y categoria son datos obligatorios"
-        });
-    }
-
-    const existeNombre = await Libro.findOne({ nombre });
-
-    if (existeNombre) {
-        return res.status(413).json({
-            mensaje: "ese libro ya existe"
-        });
-    }
-
-    const existeCategoria = await Categoria.findById(id);
-
-    if (!existeCategoria) {
-        return res.status(413).json({
-            mensaje: "no existe la categoria indicada"
-        });
-    }
-
-    const existePersona = await Persona.findById(id);
-
-    if (!existePersona) {
-        return res.status(413).json({
-            mensaje: "no existe la persona indicada"
+            mensaje: "el email ya se encuentra registrado"
         });
     }
 
     next();
 }
 
-const validarCamposPut = async (req, res, next) => {
+const validarPersonaPut = async (req, res, next) => {
 
     const { id } = req.params;
 
     if (!ObjectId.isValid(id)) {
         return res.status(413).json({
-            mensaje: "no se encuentra ese libro"
+            mensaje: "no se encuentra esa persona"
         })
     }
 
-    const existeLibro = await Libro.findById(id)
+    const existePersona = await Persona.findById(id)
 
-    if (!existeLibro) {
+    if (!existePersona) {
         console.log("no existe hay error")
         return res.status(413).json({
-            mensaje: "no se encuentra ese libro"
+            mensaje: "no se encuentra esa persona"
         })
     }
 
     next();
 }
 
-const validarCamposPrestar = async (req, res, next) => {
-
-    const { id } = req.params;
-    const persona_id = req.body.persona_id;
-
-    if (!ObjectId.isValid(id)) {
-        return res.status(413).json({
-            mensaje: "no se encuentra ese libro"
-        })
-    }
-
-    if (!ObjectId.isValid(persona_id)) {
-        return res.status(413).json({
-            mensaje: "no existe la persona indicada"
-        })
-    }
-
-    const libro = await Libro.findById(id)
-
-    if (!libro) {
-        return res.status(413).json({
-            mensaje: "no se encuentra ese libro"
-        })
-    }
-
-    if (libro.persona_id !== null) {
-        return res.status(413).json({
-            mensaje: "el libro ya se encuentra prestado, no se puede prestar hasta que no se devuelva"
-        });
-    }
-
-    const existePersona = await Persona.findById(persona_id);
-
-    if (!existePersona) {
-        return res.status(413).json({
-            mensaje: "no existe la persona indicada"
-        });
-    }
-
-    next();
-};
-
-const validarCamposDevolver = async (req, res, next) => {
+const validarPersonaDelete = async (req, res, next) => {
 
     const { id } = req.params;
 
     if (!ObjectId.isValid(id)) {
         return res.status(413).json({
-            mensaje: "no se encuentra ese libro"
+            mensaje: "no se encuentra esa persona"
         })
     }
 
-    const libro = await Libro.findById(id)
-
-    if (!libro) {
+    const persona = await Persona.findById(id)
+    
+    if (!persona) {
         return res.status(413).json({
-            mensaje: "no se encuentra ese libro"
+            mensaje: "no se encuentra esa persona"
         })
     }
+    const libro = await Libro.find({persona_id:id})
 
-    if (libro.persona_id === null) {
+    if (libro.length > 0) {
         return res.status(413).json({
-            mensaje: "ese libro no estaba prestado"
-        });
-    }
-
-    next();
-}
-
-const validarCamposBorrar = async (req, res, next) => {
-
-    const { id } = req.params;
-
-    if (!ObjectId.isValid(id)) {
-        return res.status(413).json({
-            mensaje: "no se encuentra ese libro"
-        })
-    }
-
-    const libro = await Libro.findById(id)
-
-    if (!libro) {
-        return res.status(413).json({
-            mensaje: "no se encuentra ese libro"
-        })
-    }
-
-    if (libro.persona_id !== null) {
-        return res.status(413).json({
-            mensaje: "ese libro esta prestado no se puede borrar"
+            mensaje: "esa persona tiene libros asociados, no se puede eliminar"
         });
     }
 
@@ -196,10 +126,8 @@ const validarCamposBorrar = async (req, res, next) => {
 }
 
 module.exports = {
-    validarCamposGetPorId,
-    validarCamposPost,
-    validarCamposPut,
-    validarCamposPrestar,
-    validarCamposDevolver,
-    validarCamposBorrar,
+    validarPersonaGetId,
+    validarPersonaPost,
+    validarPersonaPut,
+    validarPersonaDelete
 }

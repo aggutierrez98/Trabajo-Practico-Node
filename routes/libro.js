@@ -1,6 +1,6 @@
 const { Router } = require('express');
 
-const { existeLibroPorId, elNombreLibroExiste, libroYaPrestado } = require('../helpers/libros-validators');
+// const { existeLibroPorId, elNombreLibroExiste, libroYaPrestado } = require('../helpers/libros-validators');
 const { existeCategoriaPorId } = require('../helpers/categorias-validators');
 const { existePersonaPorId } = require('../helpers/personas-validators');
 
