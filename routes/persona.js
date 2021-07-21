@@ -12,6 +12,13 @@ const {
     personaPut
 } = require('../controllers/personas');
 
+const { 
+    validarPersonaGetId, 
+    validarPersonaPost, 
+    validarPersonaPut, 
+    validarPersonaDelete } = require('../middlewares/personas-validators');
+
+
 const router = Router();
 
 
@@ -20,12 +27,20 @@ const router = Router();
 
 router.get('/', personasGet);
 
-router.get('/:id', personaGetPorId);
+router.get('/:id', [
+    validarPersonaGetId
+], personaGetPorId);
 
-router.post('/', personaPost);
+router.post('/', [
+    validarPersonaPost
+], personaPost);
 
-router.put('/:id', personaPut);
+router.put('/:id', [
+    validarPersonaPut
+], personaPut);
 
-router.delete('/:id', personaDelete);
+router.delete('/:id', [
+    validarPersonaDelete
+],personaDelete);
 
 module.exports = router;
