@@ -115,6 +115,13 @@ const libroPrestarPut = async (req, res = response) => {
     const libroOk = existeLibroPorId(id);
     const libroPrestadoOk = libroYaPrestado(id);
     const personaOk = existePersonaPorId(persona_id);
+    // Si queremos quitar el helper de personas reemplazar existePersonaPorId por:
+    // const personaOk = await Persona.findById(id);
+    // if (!personaOk) {
+    //     return res.status(413).json({
+    //         mensaje: "no existe la persona indicada"
+    //     });
+    // }
 
     if (libroOk && libroPrestadoOk && personaOk) {
         try {

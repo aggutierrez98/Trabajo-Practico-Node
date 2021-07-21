@@ -1,6 +1,5 @@
 const Libro = require('../models/libro');
 const Persona = require('../models/persona');
-const Categoria = require('../models/categoria');
 
 const ObjectId = require('mongoose').Types.ObjectId;
 
