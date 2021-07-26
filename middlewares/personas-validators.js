@@ -17,7 +17,6 @@ const validarPersonaGetId = async (req, res, next) => {
     const existePersona = await Persona.findById(id)
 
     if (!existePersona) {
-        console.log("no existe")
         return res.status(413).json({
             mensaje: "no se encuentra esa persona"
         })
@@ -42,25 +41,17 @@ const validarPersonaPost = async (req, res, next) => {
     if (resto.length < 2) {
 
         return res.status(413).json({
-            mensaje: "error inesperado"
+            mensaje: "faltan datos"
         });
 
     } else {
-        console.log(resto)
         let dotCom = resto[1].substr(-4)
-        console.log(dotCom)
         if (dotCom !== '.com') {
             return res.status(413).json({
-                mensaje: "error inesperado"
+                mensaje: "faltan datos"
             });
         }
     }
-
-    // Para asegurar los aciertos de las busquedas, se sugiere el guardado en mayusculas de todos los campos alfanumericos
-    nombre = nombre.toUpperCase();
-    apellido = apellido.toUpperCase();
-    alias = alias.toUpperCase();
-    email = email.toUpperCase();
 
     // Persona ya registrada
     const existePersona = await Persona.findOne({ email });
