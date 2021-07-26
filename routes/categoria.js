@@ -1,8 +1,6 @@
 const { Router } = require('express');
 
-const { check } = require('express-validator');
-const { validarCampos } = require('../middlewares/validar-campos');
-const { elNombreExiste, existeCategoriaPorId, existeLibroAsociado } = require('../helpers/categorias-validators');
+const { validarCamposGetPorId, validarCamposBorrar, validarCamposPost } = require('../middlewares/categoria-validators');
 
 const {
     categoriasGet,
@@ -14,27 +12,18 @@ const {
 
 const router = Router();
 
-//TODO responder a todo con faltan datos
-//TODO cambiar a validaciones propias no de express-validator
-
 router.get('/', categoriasGet);
+
 router.get('/:id', [
-    check('id', 'No es un ID mongo válido').isMongoId(),
-    check("id").custom(existeCategoriaPorId),
-    validarCampos
+    validarCamposGetPorId
 ], categoriaGetPorId);
 
 router.post('/', [
-    check('nombre', 'Faltan datos: El nombre es obligatorio').not().isEmpty(),
-    check('nombre').custom(elNombreExiste),
-    validarCampos
+    validarCamposPost
 ], categoriaPost);
 
 router.delete('/:id', [
-    check('id', 'No es un ID mongo válido').isMongoId(),
-    check("id").custom(existeCategoriaPorId),
-    check("id").custom(existeLibroAsociado),
-    validarCampos
+    validarCamposBorrar
 ], categoriaDelete);
 
 module.exports = router;

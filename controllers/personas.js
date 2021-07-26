@@ -2,7 +2,7 @@ const { response, request } = require('express');
 const Persona = require('../models/persona');
 
 
-const personasGet = async(req = request, res = response) => {
+const personasGet = async (req = request, res = response) => {
 
     try {
         const personas = await Persona.find();
@@ -25,7 +25,7 @@ const personasGet = async(req = request, res = response) => {
 
 }
 
-const personaGetPorId = async(req = request, res = response) => {
+const personaGetPorId = async (req = request, res = response) => {
 
     const { id } = req.params;
 
@@ -43,7 +43,7 @@ const personaGetPorId = async(req = request, res = response) => {
     }
 }
 
-const personaPost = async(req, res = response) => {
+const personaPost = async (req, res = response) => {
 
     const { nombre, apellido, alias, email } = req.body;
     const persona = new Persona({ nombre, apellido, alias, email });
@@ -64,10 +64,10 @@ const personaPost = async(req, res = response) => {
     }
 }
 
-const personaPut = async(req, res = response) => {
+const personaPut = async (req, res = response) => {
 
     const { id } = req.params;
-    const { nombre, apellido, alias, email } = req.body;
+    const { nombre, apellido, alias } = req.body;
     const data = {
         nombre,
         apellido,
@@ -89,7 +89,7 @@ const personaPut = async(req, res = response) => {
     }
 }
 
-const personaDelete = async(req, res = response) => {
+const personaDelete = async (req, res = response) => {
 
     const { id } = req.params;
 

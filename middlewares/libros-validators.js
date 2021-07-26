@@ -8,7 +8,7 @@ const validarCamposGetPorId = async (req, res, next) => {
 
     const { id } = req.params;
 
-    //Que sea id de mongo
+    //Que sea id valido de mongo
     if (!ObjectId.isValid(id)) {
         return res.status(413).json({
             mensaje: "no se encuentra ese libro"
@@ -18,7 +18,6 @@ const validarCamposGetPorId = async (req, res, next) => {
     const existeLibro = await Libro.findById(id)
 
     if (!existeLibro) {
-        console.log("no existe")
         return res.status(413).json({
             mensaje: "no se encuentra ese libro"
         })
@@ -30,19 +29,6 @@ const validarCamposGetPorId = async (req, res, next) => {
 const validarCamposPost = async (req, res, next) => {
 
     let { nombre, descripcion, categoria_id, persona_id } = req.body;
-    nombre = nombre.toUpperCase();
-
-    if (!ObjectId.isValid(categoria_id)) {
-        return res.status(413).json({
-            mensaje: "no existe categoria con ese id"
-        })
-    }
-
-    if (!ObjectId.isValid(persona_id)) {
-        return res.status(413).json({
-            mensaje: "no existe libro con ese id"
-        })
-    }
 
     if (!nombre || !categoria_id) {
         return res.status(413).json({
@@ -50,6 +36,21 @@ const validarCamposPost = async (req, res, next) => {
         });
     }
 
+    if (!ObjectId.isValid(categoria_id)) {
+        return res.status(413).json({
+            mensaje: "no existe categoria con ese id"
+        })
+    }
+
+    if (persona_id) {
+        if (!ObjectId.isValid(persona_id)) {
+            return res.status(413).json({
+                mensaje: "no existe persona con ese id"
+            })
+        }
+    }
+
+    nombre = nombre.toUpperCase();
     const existeNombre = await Libro.findOne({ nombre });
 
     if (existeNombre) {
@@ -58,7 +59,7 @@ const validarCamposPost = async (req, res, next) => {
         });
     }
 
-    const existeCategoria = await Categoria.findById(id);
+    const existeCategoria = await Categoria.findById(categoria_id);
 
     if (!existeCategoria) {
         return res.status(413).json({
@@ -66,12 +67,14 @@ const validarCamposPost = async (req, res, next) => {
         });
     }
 
-    const existePersona = await Persona.findById(id);
+    if (persona_id) {
+        const existePersona = await Persona.findById(persona_id);
 
-    if (!existePersona) {
-        return res.status(413).json({
-            mensaje: "no existe la persona indicada"
-        });
+        if (!existePersona) {
+            return res.status(413).json({
+                mensaje: "no existe la persona indicada"
+            });
+        }
     }
 
     next();
@@ -90,7 +93,6 @@ const validarCamposPut = async (req, res, next) => {
     const existeLibro = await Libro.findById(id)
 
     if (!existeLibro) {
-        console.log("no existe hay error")
         return res.status(413).json({
             mensaje: "no se encuentra ese libro"
         })
